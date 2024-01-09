@@ -1,11 +1,7 @@
-//
-// Created by Max Ball on 1/7/24.
-//
-
-#ifndef WOLFSOUNDTEMPLATE_WAVETABLESYNTH_H
-#define WOLFSOUNDTEMPLATE_WAVETABLESYNTH_H
-
+#pragma once
 #include "JuceHeader.h"
+#include "WavetableOscillator.h"
+#include <vector>
 
 class WavetableSynth
 {
@@ -14,10 +10,11 @@ public:
     void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&);
 
 private: 
-    void handleMidiEvent(const juce::MidiMessage& midiEvent);
     double sampleRate;
+    void handleMidiEvent(const juce::MidiMessage& midiEvent);
     float midiNoteNumberToFrequency(int midiNoteNumber);
+    void initializeOscillators();
+    std::vector<WavetableOscillator> oscillators;
+    std::vector<float> generateSineWaveTable();
+    void render(juce::AudioBuffer<float>& buffer, int startSample, int endSample);
 };
-
-
-#endif //WOLFSOUNDTEMPLATE_WAVETABLESYNTH_H

@@ -4,14 +4,16 @@ project(AudioPlugin VERSION 0.1.0)
 
 juce_add_plugin(${PROJECT_NAME}
     COMPANY_NAME CraneFly
-    IS_SYNTH FALSE
-    NEEDS_MIDI_INPUT FALSE
-    NEEDS_MIDI_OUTPUT FALSE
+    IS_SYNTH TRUE
+    NEEDS_MIDI_INPUT TRUE
+    NEEDS_MIDI_OUTPUT TRUE
     PLUGIN_MANUFACTURER_CODE CFLY
     PLUGIN_CODE AUPL
     FORMATS VST3
-    PRODUCT_NAME "CraneFly First Plugin"
+    PRODUCT_NAME "CraneFly Wavetable Synth"
 )
+
+
 
 target_sources(${PROJECT_NAME}
     PRIVATE

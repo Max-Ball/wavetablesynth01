@@ -1,7 +1,8 @@
 #pragma once
 
-#include <juce_audio_processors/juce_audio_processors.h>
-#include <WavetableSynth.h>
+// #include <juce_audio_processors/juce_audio_processors.h>
+#include <JuceHeader.h>
+#include "WavetableSynth.h"
 
 //==============================================================================
 class AudioPluginAudioProcessor  : public juce::AudioProcessor
@@ -12,7 +13,7 @@ public:
     ~AudioPluginAudioProcessor() override;
 
     //==============================================================================
-    void prepareToPlay (double sampleRate);
+    void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;

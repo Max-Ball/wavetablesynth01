@@ -2,6 +2,15 @@ cmake_minimum_required(VERSION 3.26)
 project(wolfsoundtemplate)
 
 set(CMAKE_CXX_STANDARD 23)
+
+
+#[[
+TODO builds using the line below, but with clang warnings. It removes the following build error 
+' "WavetableSynth::prepareToPlay(double)", referenced from:
+      AudioPluginAudioProcessor::prepareToPlay(double, int) in libCraneFly Wavetable Synth_SharedCode.a(PluginProcessor.cpp.o)
+      ld: symbol(s) not found for architecture arm64'
+]]
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -c")
 set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
 include(cmake/cpm.cmake)
 

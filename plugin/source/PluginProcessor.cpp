@@ -1,5 +1,6 @@
 #include "CraneFlyFirstPlugin/PluginProcessor.h"
 #include "CraneFlyFirstPlugin/PluginEditor.h"
+#include "CraneFlyFirstPlugin/WavetableSynth.h"
 
 //==============================================================================
 AudioPluginAudioProcessor::AudioPluginAudioProcessor()
@@ -84,9 +85,11 @@ void AudioPluginAudioProcessor::changeProgramName (int index, const juce::String
 }
 
 //==============================================================================
-void AudioPluginAudioProcessor::prepareToPlay (double sampleRate)
+void AudioPluginAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     synth.prepareToPlay(sampleRate);
+
+    juce::ignoreUnused (sampleRate, samplesPerBlock);
 }
 
 void AudioPluginAudioProcessor::releaseResources()
@@ -130,7 +133,7 @@ void AudioPluginAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     buffer.clear();
 
     // Pass both buffer samples and midi samples to synth class
-    synth.processBlock(buffer, midiMessages);
+    // synth.processBlock(buffer, midiMessages);
 }
 
 //==============================================================================

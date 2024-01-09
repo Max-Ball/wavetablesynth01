@@ -1,8 +1,42 @@
 #include "CraneFlyFirstPlugin/WavetableSynth.h"
 
+std::vector<float> WavetableSynth::generateSineWaveTable()
+{
+    constexpr auto WAVETABLE_LENGTH = 64;
+
+    std::vector<float> sineWaveTable(WAVETABLE_LENGTH);
+
+    const auto PI = std::atanf(1.f) * 4;
+
+    for (auto i = 0; i < WAVETABLE_LENGTH; i++)
+    {
+        sineWaveTable[i] = std::sinf(
+            2 * PI * static_cast<float>(i) / static_cast<float>(WAVETABLE_LENGTH)
+        );
+    }
+    
+    return sineWaveTable;
+}
+
+void WavetableSynth::initializeOscillators()
+{
+    // Set oscillator count - 128 = number of MIDI notes available
+    constexpr auto OSCILLATORS_COUNT = 128;
+
+    const auto waveTable = generateSineWaveTable();
+
+    oscillators.clear();
+    for (auto i = 0; i < OSCILLATORS_COUNT; i++)
+    {
+        oscillators.emplace_back(waveTable, sampleRate);
+    }
+    
+}
+
 void WavetableSynth::prepareToPlay(double sampleRate)
 {
     this->sampleRate = sampleRate;
+    initializeOscillators();
 }
 
 void WavetableSynth::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
@@ -32,6 +66,31 @@ void WavetableSynth::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBu
     render(buffer, currentSample, buffer);
 }
 
+void WavetableSynth::render(juce::AudioBuffer<float>& buffer, int startSample, int endSample)
+{
+    auto* firstChannel = buffer.getWritePointer(0);
+
+    for (auto& oscillator : oscillators)
+    {
+        if(oscillator.isPlaying())
+        {
+            for (auto sample = startSample; sample < endSample; sample++)
+            {
+                firstChannel[sample] += oscillator.getSample();
+            }
+            
+            // Copy to all remaining channels
+            for (auto channel = 1; channel < buffer.getNumChannels(); channel++)
+            {
+                std::copy(firstChannel + startSample, firstChannel + endSample, 
+                    buffer.getWritePointer(channel) + startSample);
+            }
+            
+        }
+    }
+    
+}
+
 void WavetableSynth::handleMidiEvent(const juce::MidiMessage& midiEvent)
 {
     // Check MIDI Event type
@@ -45,12 +104,19 @@ void WavetableSynth::handleMidiEvent(const juce::MidiMessage& midiEvent)
 
         // Pick an oscillator from oscillator set to initialize with frequency
         oscillators[oscillatorId].setFrequency(frequency);
-    } else if (midiEvent.isNoteOff())
+    } 
+    else if (midiEvent.isNoteOff())
     { 
-
-    } else if (midiEvent.isAllNotesOff())
+        const auto oscillatorId = midiEvent.getNoteNumber();
+        oscillators[oscillatorId].stop();
+    } 
+    else if (midiEvent.isAllNotesOff())
     {
-
+        for (auto& oscillator : oscillators)
+        {
+            oscillator.stop();
+        }
+        
     }
 }
 float WavetableSynth::midiNoteNumberToFrequency(int midiNoteNumber)
