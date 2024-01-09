@@ -46,10 +46,22 @@ void WavetableSynth::handleMidiEvent(const juce::MidiMessage& midiEvent)
         // Pick an oscillator from oscillator set to initialize with frequency
         oscillators[oscillatorId].setFrequency(frequency);
     } else if (midiEvent.isNoteOff())
-    {
+    { 
 
     } else if (midiEvent.isAllNotesOff())
     {
 
     }
+}
+float WavetableSynth::midiNoteNumberToFrequency(int midiNoteNumber)
+{
+    // Set fundamental frequency to A440hz
+    constexpr auto A4_FREQUENCY = 440.f;
+    // Corresponding MIDI note of A440hz
+    constexpr auto A4_NOTE_NUMBER = 69.f;
+    // 12 semitones in an equal temperament octave
+    constexpr auto SEMITONES_IN_AN_OCTAVE = 12.f;
+
+    // Return frequency shifted by it's relative position. base (2.f) raised to the power of exponent (midiNoteNumber - A4_NOTE_NUMBER) divided by SEMITONES_IN_OCTAVE
+    return A4_FREQUENCY * std::powf(2.f, (midiNoteNumber - A4_NOTE_NUMBER) / SEMITONES_IN_AN_OCTAVE);
 }

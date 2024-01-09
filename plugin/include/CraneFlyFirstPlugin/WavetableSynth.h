@@ -16,6 +16,7 @@ public:
 private: 
     void handleMidiEvent(const juce::MidiMessage& midiEvent);
     double sampleRate;
+    float midiNoteNumberToFrequency(int midiNoteNumber);
 };
 
 
